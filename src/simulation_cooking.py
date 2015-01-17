@@ -37,6 +37,7 @@ num_objs = -1
 last_obj = "unknown"
 global scnd_to_lat_obj
 scnd_to_lat_obj = "unknown"
+third_to_last_obj = "unknown"
 storage = None
 ground_truth = "None"
 speech = []
@@ -78,6 +79,7 @@ from geometry_msgs.msg import Point
 import operator
 import collections
 import random
+import copy
 
 #David's global variables
 ingredient_file = 'src/no_repeat_numbered.txt'
@@ -86,6 +88,7 @@ unigram_init = False
 uni_counts = collections.Counter()
 past_bigrams = {}
 past_trigrams = {}
+past_4grams = {}
 smoothing_coefficient = 0
 
 #Recipe File Reader
@@ -100,17 +103,19 @@ def file_reader():
     f.close()
     #Witten-Bell Smoothing coefficient
     smoothing_coefficient = float(len(recipe_list))/(len(recipe_list) + len(vocabulary))
-
+    #smoothing_coefficient = 0.5
 #David's utility functions
 def normalize(x): #for dictionary vectors
     total = sum(x.values(), 0.0)
     for key in x:
         x[key] /= total
     return x
+
 def weight(x, weight):
-    for key in x:
-        x[key] *= weight
-    return x
+    cpy = copy.deepcopy(x)
+    for key in cpy:
+        cpy[key] *= weight
+    return cpy
 
 #David's transition functions
 def unigram_counter(mod):
@@ -126,6 +131,7 @@ def unigram_counter(mod):
 
     return uni_counts
 
+'''
 def bigram_counter(previous_ingredient, mod):
 
     if previous_ingredient in past_bigrams:
@@ -146,7 +152,30 @@ def bigram_counter(previous_ingredient, mod):
             past_bigrams[previous_ingredient] = weight(ni, b_lam) + weight(unigram_counter(mod), 1.0 - b_lam)
     
         return past_bigrams[previous_ingredient]
+'''
 
+def bigram_counter(prev_ing, mod):
+    if prev_ing in past_bigrams:
+        return past_bigrams[prev_ing]
+    else:
+        b_lam = smoothing_coefficient #need to test for best number
+        #b_lam = 1.0 #need to test for best number
+        ni = collections.Counter()
+        for line in range(0, len(recipe_list)):
+            if prev_ing in recipe_list[line - 1]:
+                next_ing = recipe_list[line].split(' # ')
+                if int(next_ing[0]) != mod:
+                    ni[next_ing[1].split(',')[0]] += 1.0
+        ni = normalize(ni)
+        if not list(ni.items()):
+            #print 'mod: %f' % mod
+            #print unigram_counter(mod)
+            past_bigrams[prev_ing] = weight(unigram_counter(mod), 1.0 - b_lam)
+        else:
+            past_bigrams[prev_ing] = weight(ni, b_lam) + weight(unigram_counter(mod), 1.0 - b_lam)
+        return past_bigrams[prev_ing]
+
+'''
 def trigram_counter(prev_ing, prev_ing2, mod):
     input_ings = prev_ing + ":" + prev_ing2
     if input_ings in past_trigrams:
@@ -155,7 +184,7 @@ def trigram_counter(prev_ing, prev_ing2, mod):
         t_lam = smoothing_coefficient
         ni = collections.Counter()
 
-        for line in range(0, len(recipeh2r_gesture.py_list)):
+        for line in range(0, len(recipe_list)):
             if prev_ing in recipe_list[line] and prev_ing2 in recipe_list[line+1]:
                 next_ing = recipe_list[line+2].split(' # ')
                 if int(next_ing[0]) != mod:
@@ -167,9 +196,53 @@ def trigram_counter(prev_ing, prev_ing2, mod):
             past_trigrams[input_ings] = weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
         else:
             #return weight(ni, t_lam) + weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
-            past_trigrams[input_ings] =h2r_gesture.py weight(ni, t_lam) + weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
+            past_trigrams[input_ings] = weight(ni, t_lam) + weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
 
         return past_trigrams[input_ings]
+'''
+def trigram_counter(prev_ing, prev_ing2, mod):
+    
+    input_ings = prev_ing + ":" + prev_ing2
+    if input_ings in past_trigrams:
+        return past_trigrams[input_ings]
+    else:
+        t_lam = smoothing_coefficient
+        ni = collections.Counter()
+
+        for line in range(0, len(recipe_list)):
+            if prev_ing in recipe_list[line - 2] and prev_ing2 in recipe_list[line - 1]:
+                next_ing = recipe_list[line].split(' # ')
+                if int(next_ing[0]) != mod:
+                    ni[next_ing[1].split(',')[0]] += 1.0
+
+        ni = normalize(ni)
+        if not list(ni.items()):
+            past_trigrams[input_ings] = weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
+        else:
+            past_trigrams[input_ings] = weight(ni, t_lam) + weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
+        return past_trigrams[input_ings]
+
+def fourgram_counter(prev_ing, prev_ing2, prev_ing3, mod):
+
+    input_ings = prev_ing + ":" + prev_ing2 + ":" + prev_ing3
+    if input_ings in past_4grams:
+        return past_4grams[input_ings]
+    else:
+        f_lam = smoothing_coefficient
+        ni = collections.Counter()
+
+        for line in range(0, len(recipe_list)):
+            if prev_ing in recipe_list[line - 3] and prev_ing2 in recipe_list[line - 2] and prev_ing3 in recipe_list[line - 1]:
+                next_ing = recipe_list[line].split(' # ')
+                if int(next_ing[0]) != mod:
+                    ni[next_ing[1].split(',')[0]] += 1.0
+
+        ni = normalize(ni)
+        if not list(ni.items()):
+            past_4grams[input_ings] = weight(trigram_counter(prev_ing2, prev_ing3, mod), 1.0 - f_lam)
+        else:
+            past_4grams[input_ings] = weight(ni, f_lam) + weight(trigram_counter(prev_ing2, prev_ing3, mod), 1.0 - f_lam)
+        return past_4grams[input_ings]
 
 #vector utilities
 def norm(vec):
@@ -316,8 +389,14 @@ def baxter_respond():
     global speech
     global last_obj
     global scnd_to_lat_obj
+    global third_to_last_obj
+
+
+    print 'obj 1: %s, obj 2: %s, obj 3: %s' % (last_obj, scnd_to_lat_obj, third_to_last_obj)
+
     most_likely = max(state_dist.iteritems(), key=operator.itemgetter(1))
-    if most_likely[1] > 0.9 and last_obj != most_likely[0]:
+    if most_likely[1] > 0.3 and last_obj != most_likely[0]:
+            third_to_last_obj = scnd_to_lat_obj
             scnd_to_lat_obj = last_obj
             last_obj = most_likely[0]
             pub = rospy.Publisher('fetch_commands', String, queue_size=0)
@@ -332,6 +411,13 @@ def baxter_respond():
             #del state_dist[most_likely[0]]
             rate.sleep()
     speech = []
+
+    #if last_obj == 'salt':
+    #    third_to_last_obj = 'unknown'
+    #    scnd_to_lat_obj = 'unknown'
+    #    last_obj = 'unknown'
+    #    pass
+
 
 
 
@@ -356,19 +442,30 @@ def update_model():
         state_dist[obj_id] = 0.0
         # transition update
         for prev_id in prev_dist.keys():
-            #if is_arm_null_gesture(right_arm_origin, right_arm_point) and \
-            # is_arm_null_gesture(left_arm_origin, left_arm_point) \
-            #and len(speech)==0:
-            #    t= 0.005
-            #else:
-            #    #t = bigram_counter(last_obj, -1)[containers[obj_id]]
-            #    t = trigram_counter(last_obj, scnd_to_lat_obj, -1)[containers[obj_id]]
-            #    t *= 5
-            #    #t= 0.005
+            if is_arm_null_gesture(right_arm_origin, right_arm_point) and \
+             is_arm_null_gesture(left_arm_origin, left_arm_point) \
+            and len(speech)==0 and False:
+                t = 0.005
+            else:
+                #t= 0.005
+                #t = max(0.0001, unigram_counter(-1)[obj_id.replace('_',' ')])
+                #t = unigram_counter(-1)[obj_id.replace('_',' ')]
+                #t = max(0.001, bigram_counter(last_obj, -1)[obj_id.replace('_',' ')])
+                #print t
+                # = max(0.0001, trigram_counter(scnd_to_lat_obj, last_obj, -1)[obj_id.replace('_', ' ')])
+                t = max(0.0001, fourgram_counter(last_obj, scnd_to_lat_obj, third_to_last_obj, -1)[obj_id.replace('_',' ')])
+                #if 'brown sugar' in speech:
+                #    print 'brown sugar %f' % t
+                #if 'white sugar' in speech:
+                #    print 'white sugar %f' % t
+                if 'carduni' in obj_id:
+                    print '%s %f' % (obj_id, t)
+                #t *= 10
+            #print 'last_obj %s, obj_id %s, t %f' % (last_obj, obj_id, t)    
             #t = bigram_counter(last_obj, -1)[obj_id.replace('_', ' ')]
-            t = trigram_counter(last_obj, scnd_to_lat_obj, -1)[obj_id.replace('_', ' ')]
+            #t = trigram_counter(last_obj, scnd_to_lat_obj, -1)[obj_id.replace('_', ' ')]
             #t *= 10
-            #t = 0.005
+            #t = 0.05
             #print "previous object: %s, estimation of object %s: %f" % (last_obj, containers[obj_id], t)
             if prev_id == obj_id:
                 state_dist[obj_id] += (1-t)*prev_dist[prev_id]
