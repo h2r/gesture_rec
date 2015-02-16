@@ -24,17 +24,16 @@ curry_powder curry powder
 nutmeg nutmeg
 oregano oregano
 paprika paprika
-rosemary
-sesame_seeds
+rosemary rosemary
+sesame_seeds sesame seeds seasame
 thyme thyme
 all-purpose_flour all purpose all-purpose flour
-whole_wheat_flour whole wheat flour
 cornmeal cornmeal
 canned_tomatoes canned tomatoes
 vegetable_stock vegetable stock
-chicken_stock chicken stock
+chicken_stock chicken stock broth
 onion onion onions
-shallot shallot shallots
+shallots shallot shallots green onion onions
 celery celery
 carrot carrot carrots
 dried_mushrooms dried mushrooms
@@ -44,13 +43,13 @@ walnuts walnuts
 almonds almonds
 lemon lemon
 lime lime
-white_sugar white sugar
+white_sugar sugar
 brown_sugar brown sugar
 honey honey
 maple_syrup maple syrup
-potatoe potatoes potato
+potato potatoes potato
 apple apple apples
-orange oranage oranges
+orange orange oranges
 ketchup ketchup
 mustard mustard
 salsa salsa
@@ -60,8 +59,25 @@ butter butter
 eggs egg eggs
 vanilla vanilla extract
 salt salt
-artichokes artichokes
+artichokes artichokes artichoke
 parsley parsley
 bread_crumbs bread crumbs breadcrumbs
 carduni carduni
 pancake_mix pancake mix
+puff_pastry puff pastry
+spinach spinach
+ricotta_cheese ricotta cheese
+feta_cheese feta  cheese
+noodles yokisoba noodles
+ginger ginger
+sesame_oil sesame oil seasame
+cabbage cabbage cabbages
+chickpeas chickpeas
+coriander coriander
+cilantro cilantro
+tomato_sauce tomato sauce
+beef beef
+coconut_milk coconut milk
+fish_sauce fish sauce
+bell_pepper bell pepper peppers
+cherry_tomatos cherry tomato tomatos

@@ -1,0 +1,246 @@
+artichokes please hand me the artichokes to the right of the cutting board
+parsley if you could hand me the parsley on the cutting board
+bread_crumbs please hand me the bread crumbs they are to the left of the cutting board
+parmesan_cheese may i see the parmesan cheese it's in the bowl by the cutting board
+olive_oil can you hand me the olive oil in that bottle by the microwave
+artichokes the artichokes
+parsley the parsley that's over there please
+bread_crumbs could you hand me the bread crumbs
+parmesan_cheese parmesan cheese over there
+olive_oil please hand me the olive oil
+artichokes the artichokes on the right could you hand them to me
+parsley could you hand me the parsley from the cutting board
+bread_crumbs the breadcrumbs on the left could you give them to me
+parmesan_cheese there's grated parmesan cheese on the left could you hand it to me
+olive_oil could you hand me the bottle of olive oil on the right
+artichokes i need the artichokes on the right
+parsley pass me the parsley on the cutting board
+bread_crumbs pass me the container of bread crumbs
+parmesan_cheese i want the bowl of parmesan
+olive_oil i need the olive oil in the clear jar
+artichokes the artichokes
+parsley the green vegetable with leaves
+bread_crumbs in the can
+parmesan_cheese the grated cheese in the bowl
+olive_oil the tall bottle of oil
+artichokes hand me the artichokes vegetable located on the right side of cutting board
+parsley hand me the parsley vegetable located on the left side of cutting board
+bread_crumbs hand me the bread crumbs that are in the white and black cardboard container on left side of counter
+parmesan_cheese hand me the parmesan cheese located in small bowl on the left side of counter
+olive_oil hand me the bottle of olive oil located on the right side of table right next to aunt jemima box
+artichokes can you grab those artichokes
+parsley can you get me the parsley on the cutting board
+bread_crumbs can you grab the bread crumbs on the counter
+parmesan_cheese can you hand me the parmesan cheese on the left
+olive_oil can you hand me the bottle of olive oil
+artichokes the green balls to the right of the parsley and in front of the aunt jemima box
+artichokes please hand me the four artichokes on the counter
+parsley please give me the bunch of parsley on the cutting board
+bread_crumbs please give me the can of bread crumbs
+parmesan_cheese please give me the bowl of parmesan cheese
+olive_oil please give me the bottle of olive oil
+artichokes give me the artichokes on the right side of the cutting board
+parsley please hand me the parsley bunch it's on the cutting board
+bread_crumbs please hand me the can of seasoned bread crumbs the one in front of the juice
+parmesan_cheese the bowl with the white stuff in it to the left of the cutting board
+olive_oil hand me the tall bottle next to the microwave
+artichokes please give me the green artichokes in front of the olive oil
+parsley please give me the parsley on the left side of the cutting board
+bread_crumbs please give me the bread crumbs in the container behind the bowl of parmesan cheese
+parmesan_cheese please give me the parmesan cheese in the bowl in front of the bread crumbs
+olive_oil please give me the olive oil that is behind the artichokes
+artichokes could you please hand me the green artichokes on the right
+parsley could you pass me the green parsley on the left
+bread_crumbs please hand me the container of breadcrumbs on the far left side of the counter 
+parmesan_cheese please pass the clear bowl with the parmesan cheese in it
+olive_oil please hand me the tall bottle of olive oil there on the right
+artichokes give me the artichokes in front of the microwave
+parsley can you hand me the parsley that's on the cutting board
+bread_crumbs can you please hand me the bread crumbs
+parmesan_cheese please give me the parmesan cheese
+olive_oil can you give me the olive oil in front of the microwave
+artichokes please hand me the green vegetable with pointy spikes
+parsley please hand me the bushy green vegetable
+bread_crumbs please hand me the round can marked 4c
+parmesan_cheese please hand me the oil that is in a bottle with a black lid
+olive_oil please hand me the square wooden board
+artichokes hand em the stuffed artichokes
+parsley bring me the parsley
+bread_crumbs hand me the bread crumbs
+parmesan_cheese give me the the parmesan cheese
+olive_oil bring me the olive oil
+artichokes pass me the artichokes in front of the microwave
+parsley do you see the clump of parsley next to the jug of orange juice and powl of parmesan can you hand it to me
+bread_crumbs i need the canister of bread crumbs behind the bowl of parmesan cheese
+parmesan_cheese the bowl of cheeseit's to the left of the parsley in front of the bread  crumbs
+olive_oil i meant the jar of olive oil to the left of the microwave to the right of the box of aunt jemima pancake mix
+artichokes please hand me the green vegetables that are in front of the aunt jemima mix and olive oil bottle
+parsley will you hand me the herb that's laying in front of the canister with the blue lid
+bread_crumbs will you hand me the canister with the breaded chicken picture on the front
+parmesan_cheese please pass me the glass bowl with the white shredded cheese in it
+olive_oil would you hand me the tall glass bottle that is standing in front of the microwave but behind the artichokes
+artichokes please hand me the green vegetable in front of the aunt jemima pankcake mix
+parsley please hand me the green herbs in front of the blue topped containter
+bread_crumbs please hand me the large round container that has chicken on it
+parmesan_cheese please hand me the glass dish that is to the left of the cutting board with shredded cheese in it
+olive_oil please hand me the tall glass container in front of the microwave
+artichokes the 4 artichokes
+parsley i need the parsley for my next ingredient
+bread_crumbs i need the bread crumbs please
+parmesan_cheese i need to use the parmesan cheese now
+olive_oil i need you to bring me the olive oil
+artichokes the four balls of lettuce on the counter
+parsley hand me the parsley stalk
+bread_crumbs hand me the black and white can
+parmesan_cheese please hand me the bowl with the white stuff
+olive_oil please hand me the cooking oil
+artichokes hand me the artichokes 
+parsley hand me the parsley 
+bread_crumbs hand me the breadcrumbs 
+parmesan_cheese give me the bowl of parmesan cheese
+olive_oil can you hand me the olive oil please
+artichokes give me the 4 artichokes on the right side of the table
+parsley give me the green parsley that is sitting on the cutting board
+bread_crumbs give me the bread crumb canister on the far left of the table
+parmesan_cheese give me the parmesan cheese that is in the clear bowl on the left side of the table
+olive_oil give me the bottle of olive oil located on the right of the table in front of the micorwave
+artichokes the green things in front of the aunt jemima box
+parsley the parsley is the leafy thing on the cutting board
+bread_crumbs please hand me the white container that says 4c
+parmesan_cheese they are in a bowl to the left of the cutting board
+olive_oil hand me the bottle behind the artichokes
+artichokes hand me the artichokes
+parsley hand me the parsely
+bread_crumbs hand me the seasoning
+parmesan_cheese hand me the cheese
+olive_oil hand me the olive oil
+artichokes can you hand me the artichokes in front of the microwave
+parsley can you please hand me the parsley that is on the cutting board
+bread_crumbs can you hand me the bread crumbs that are to the behind the bowl of parmesan
+parmesan_cheese can you hand me the bowl of parmesan that is sitting to the left of the cutting board
+olive_oil can you hand me the jar of olive oil in front of the microwave
+artichokes please hand me the round light green vegetables to the right of the counter
+parsley give me the dark green leafy plant in front of the container with the blue lid
+bread_crumbs give me the breadcrumbs there to the left in the black and white can
+parmesan_cheese hand me the white colored cheese in the glass bowl
+olive_oil give me the olive oil next to the microwave in the glass bottle with a spout
+artichokes the green ones in front of the microwave
+parsley the vegetable in front of the white tub
+bread_crumbs hand me the cheese container on the left
+parmesan_cheese hand me the bowl of bread crumbs in the bowl to the left
+olive_oil hand me the bottle of greenish liquid to the right
+artichokes i need 4 artichokes please
+parsley parsley i need parsley
+bread_crumbs can i get you to hand me the bread crumbs please
+parmesan_cheese can you pass me the parmesan cheese please
+olive_oil can you pass me the olive oil in front of the microwave
+artichokes please give me the artichokes in front of the microwave
+parsley please give me the parsley on the left side of the cutting board
+bread_crumbs please give me the can of bread crumbs to the left of the cutting board
+parmesan_cheese please give me the bowl of parmesan cheese to the left of the cutting board
+olive_oil please give me the olive oil in front of the microwave
+artichokes give me the artichokes that are in front of the olive oil
+parsley can you give me the parsley on top of the cutting board
+bread_crumbs give me the bread crumbs next to the orang juice
+parmesan_cheese give me the parmessan cheese in the bowl in front of the bread crumbs
+olive_oil give me the olive oil bottle that's in front of the microwave
+artichokes the artichokes please
+parsley i need the parsley please
+bread_crumbs please pass me the breadcrumbs
+parmesan_cheese can i have the cheese
+olive_oil please pass me the olive oil
+artichokes pass me the artichokes to the left of the salt
+parsley hand me the green leafy stuff on the cutting board
+bread_crumbs pass me the breadcrumbs in the white and black cylindrical container
+parmesan_cheese pass the parmesan in the small glass bowl
+olive_oil pass me the olive oil in the glass bottle on the right side behind the artichokes
+artichokes the round green ball thing with leaves
+parsley pass me the leafy things in the front center
+bread_crumbs can you pass me that white can on the left
+parmesan_cheese the white thing in a glass bowl in the front
+olive_oil the yellow liquid in the glass container
+artichokes grab me the 4 artichokes sitting in front of the microwave
+parsley give me the parsley on the cutting board
+bread_crumbs give me the breadcrumbs in the container with 4c on it
+parmesan_cheese please grab me the parmesan cheese in the glass bowl
+olive_oil can you get the olive oil in the tall glass bottle for me
+artichokes give me the artichokes in front of the microwave
+parsley give me the parsley in front of the blue container
+bread_crumbs give me the breadcrumbs to the left of the langers juice
+parmesan_cheese give me the shredded cheese in front of the breadcrumbs
+olive_oil give me the olive oil behind the artichokes
+artichokes i need the artichokes on the right side of the chopping board
+parsley can you grab that parsely on the cutting board
+bread_crumbs i need that can of bread crumbs on the counter
+parmesan_cheese i need that bowl of parmesan cheese onthe counter
+olive_oil may you get me that bottle of olive oil next to the microwave
+artichokes the round green things in front of the pancake box
+parsley the green leagy bunch on the left of the cutting board
+bread_crumbs the tall can right behind the small glass bowl in fron
+parmesan_cheese the glass bown in front
+olive_oil the tall skinny bottle to the right of the pancake box
+artichokes please give me the artichokes 4 of them in front of the aunt jemima box
+parsley please give me the parsley that's on the cutting board
+bread_crumbs i need the bread crumbs in the white cylindrical box please
+parmesan_cheese i need the grated parmesan cheese in the clear bowl to the left of the cutting board please
+olive_oil please hand me the olive oil in the tall clear jar
+artichokes hand me those 4 artichokes near the microwave
+parsley hand me the bunch of parsley at the edge of the cutting board
+bread_crumbs please give me the box of bread crumbs on the left side of the counter
+parmesan_cheese please hand me the bowl of parmesan cheese at the edge of the counter
+olive_oil please hand me the bottle of olive oil next to the microwave
+artichokes please hand me the artichoke to the right of the cutting board
+parsley please hand me the parsley on the top left-hand side of the cutting board
+bread_crumbs please hand me the bread crumbs in the black and white container
+parmesan_cheese please hand me the parmesan cheese in the glass bowl
+olive_oil please hand me the olive oil it is the bottle behind the artichokes
+artichokes hand me the light green veggie with hard leaves
+parsley the leafy green sprigs of parsley in front of the tuperware
+bread_crumbs i need the bread crumbs in the white and black container to the left of the parsley
+parmesan_cheese pass the cheese in front of the bread crumbs in the small bowl
+olive_oil it is the oil in the tall glass behind the artichokes
+artichokes can you hand me the artichoke
+parsley could you provide the parsley for me
+bread_crumbs can you please give me the bread crumbs
+parmesan_cheese can you please locate the parmesan and pass it to me
+olive_oil can you please provide the olive oil for me
+artichokes hand me the round green vegetables towards the front of shelf
+parsley hand me the green grassy looking vegetable n front of the flour
+bread_crumbs hand me the tall round box behind the glass bowl
+parmesan_cheese hand me the white shredded stuff in the glass bowl near the front of shelf
+olive_oil please hand me the bottle near microwave  it looks like a wine bottle
+artichokes please give me artichokes on the right side of the counter
+parsley please hand me the parsley next to the artichokes
+bread_crumbs please hand me the breadcrums behind the parmesan cheese
+parmesan_cheese give me the parmesan cheese in front of the breadcrumbs
+olive_oil please give me the olive oil behind the artichokes
+artichokes the green balls on the right of the table
+parsley the green bushy items on the cutting board
+bread_crumbs the 4c cylinder container to the left
+parmesan_cheese the ingredients in the glass bowl to the left
+olive_oil the tall clear bottle to the right
+artichokes please give me the artichokes on the right side of the bench
+parsley please hand me the bunch of parsley sitting on the chopping board
+bread_crumbs give me the bread crumbs on the far left side of the bench
+parmesan_cheese pass me the parmesan cheese in the clear glass bowl
+olive_oil hand me the olive oil in the thin glass bottle
+artichokes please hand over the light green vegatable
+parsley give me the parseley on the left side of the table
+bread_crumbs give me the bread crumbs in the container on the left side
+parmesan_cheese give me the cheese in the bowl
+olive_oil please give me the oil that is in the big glass clear bottle
+artichokes the artichokes sitting in front of the microwave please hand them to me 
+parsley please hand me the bunch of parsley
+bread_crumbs the bread crumbs they are to the left in a canister 
+parmesan_cheese the bowl of cheese that is in front of the bread crumbs 
+olive_oil hand me the olive oil near the pancake mix
+artichokes give me those four artichokes on the right side of the cutting board
+parsley please hand me the parsley on the cutting board
+bread_crumbs would you hand me the bread crumbs that are to the left of the parsley
+parmesan_cheese i need the parmesan cheese to the left of the cutting board
+olive_oil i need the olive oil that's next to the aunt jemina box
+artichokes hand me the the big round green ones
+parsley i need the green leafy stuff
+bread_crumbs pass me the tall cylindrical canister
+parmesan_cheese pass me the white stuff in the clear bowl
+olive_oil hand me the clear skinny bottle with oil

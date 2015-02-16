@@ -45,10 +45,14 @@ global state_dist
 state_dist = dict()
 global objects
 objects = []
-containers = {"pink_bowl": "salt", "green_bowl": "pepper", "light_green_bowl": "vanilla", "yellow_bowl": "chocolate"}
+containers = {"b1": "b1", "b2": "b2", "b3": "b3", "b4": "b4", "b5": "b5"}
 #TEMP HACK
 #objects = [("pink_box", (1.4,-0.2,-0.5)), ("purple_cylinder", (1.4, 0.05, -0.5))]
-#objects = [("light_green_bowl",(1.2, -0.37, -0.37)), ("green_bowl",(1.2, 0.07,-0.37))]
+for i in range(0, 3):
+    for j in range(0, 3):
+        objects.append(("b"+str(i)+str(j), (1.2 + 0.10*j, -0.37 + 0.10*i, -0.37)))
+        containers["b"+str(i)+str(j)] = "b"+str(i)+str(j)
+#objects = [("b1",(1.2, -0.37, -0.37)), ("b2",(1.2, -0.32,-0.37)),("b3",(1.2,-0.27, -0.37)),("b4",(1.2, -0.22, -0.37)),("b5",(1.2, -0.17, -0.37))]
 #objects = [("salt", (??, ??, ??)), ]
 global t
 t = 0.005
@@ -237,7 +241,7 @@ def prob_of_sample(sample):
 def fill_points(tfl):
     try:
         global user
-        frame = "/base" #"camera_link"
+        frame = "openni_link"
         allFramesString = tfl.getFrameStrings()
         onlyUsers = set([line for line in allFramesString if 'right_elbow_' in line])
         n = len('right_elbow_')
@@ -276,23 +280,23 @@ def fill_points(tfl):
         head_point = (head_temp[0] + to_head[0], head_temp[1] + to_head[1], head_temp[2] + to_head[2])
         
         #visualization for testing (verify head vector)
-        # marker = Marker()
-        # marker.header.frame_id = "camera_link"
-        # marker.header.stamp = rospy.Time(0)
-        # marker.type = marker.POINTS
-        # marker.action = marker.ADD
-        # marker.scale.x = 0.2
-        # marker.scale.y = 0.2
-        # marker.scale.z = 0.2
-        # marker.color.a = 1.0
-        # p1 = Point(right_arm_origin[0],right_arm_origin[1],right_arm_origin[2])
-        # p2 = Point(right_arm_point[0],right_arm_point[1],right_arm_point[2])
-        # p3 = Point(left_arm_origin[0],left_arm_origin[1],left_arm_origin[2])
-        # p4 = Point(left_arm_point[0],left_arm_point[1],left_arm_point[2])
-        # p5 = Point(head_origin[0],head_origin[1],head_origin[2])
-        # p6 = Point(head_point[0],head_point[1],head_point[2])
-        # marker.points += [p1, p2, p3, p4, p5, p6]
-        # pub.publish(marker)
+        #marker = Marker()
+        #marker.header.frame_id = "camera_link"
+        #marker.header.stamp = rospy.Time(0)
+        #marker.type = marker.POINTS
+        #marker.action = marker.ADD
+        #marker.scale.x = 0.2
+        #marker.scale.y = 0.2
+        #marker.scale.z = 0.2
+        #marker.color.a = 1.0
+        #p1 = Point(right_arm_origin[0],right_arm_origin[1],right_arm_origin[2])
+        #p2 = Point(right_arm_point[0],right_arm_point[1],right_arm_point[2])
+        #p3 = Point(left_arm_origin[0],left_arm_origin[1],left_arm_origin[2])
+        #p4 = Point(left_arm_point[0],left_arm_point[1],left_arm_point[2])
+        #p5 = Point(head_origin[0],head_origin[1],head_origin[2])
+        #p6 = Point(head_point[0],head_point[1],head_point[2])
+        #marker.points += [p1, p2, p3, p4, p5, p6]
+        #pub.publish(marker)
 
         return True
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
@@ -371,7 +375,7 @@ def update_model():
         for obj in objects: #make sure this is a UID
             prev_dist[obj[0]] = 1.0/l
     for obj in objects:
-        print objects
+        #print objects
         obj_id = obj[0]
         state_dist[obj_id] = 0.0
         # transition update
@@ -381,11 +385,11 @@ def update_model():
              and len(speech)==0:
                 t= 0.005
             else:
-                t = bigram_counter(last_obj, -1)[containers[obj_id]]
+                #t = bigram_counter(last_obj, -1)[containers[obj_id]]
                 #t = trigram_counter(containers[last_obj], containers[scnd_to_lat_obj], -1)[containers[obj_id]]
-                t *= 5
-                #t= 0.005
-            print "previous object: %s, estimation of object %s: %f" % (last_obj, containers[obj_id], t)
+                #t *= 5
+                t= 0.005
+            #print "previous object: %s, estimation of object %s: %f" % (last_obj, containers[obj_id], t)
             if prev_id == obj_id:
                 state_dist[obj_id] += (1-t)*prev_dist[prev_id]
             else:
@@ -471,7 +475,7 @@ def main():
     global pub
     pub = rospy.Publisher("test_marker", Marker)
     marker = Marker()
-    marker.header.frame_id = "base" #"camera_link"
+    marker.header.frame_id = "openni_link"
     marker.header.stamp = rospy.Time(0)
     marker.type = marker.POINTS
     marker.action = marker.ADD
@@ -480,11 +484,12 @@ def main():
     marker.scale.z = 0.2
     marker.color.a = 1.0
     # depth, right left, up down
-    #p1 = Point(1.2, 0.07,-0.37) # color bowl
-    #p2 = Point(1.2, -0.37, -0.37) #metal bowl
-    #p3 = Point(1.5, -0.37, -0.3) #plastic spoon
-    #p4 = Point(1.5, 0.07, -0.3) #silver spoon
-    #marker.points += [p1,p2,p3,p4]
+    p1 = Point(1.2, -0.37,-0.37) # color bowl
+    p2 = Point(1.2, -0.32, -0.37) #metal bowl
+    p3 = Point(1.5, -0.27, -0.37) #plastic spoon
+    p4 = Point(1.5, -0.22, -0.37) #silver spoon
+    p5 = Point(1.5, -0.17, -0.37) #silver spoon
+    #marker.points += [p1,p2,p3,p4,p5]
     baxter_init_response()
     while not rospy.is_shutdown():
         pub.publish(marker)

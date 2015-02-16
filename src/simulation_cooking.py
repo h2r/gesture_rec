@@ -18,6 +18,15 @@ from tf.transformations import quaternion_inverse, quaternion_matrix
 
 from object_recognition_msgs.msg import RecognizedObjectArray
 
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Point
+
+#David's Dependencies
+import operator
+import collections
+import random
+import copy
+
 global left_arm_origin
 global right_arm_origin
 global head_origin
@@ -35,17 +44,18 @@ global last_obj
 global num_objs
 num_objs = -1
 last_obj = "unknown"
-global scnd_to_lat_obj
 scnd_to_lat_obj = "unknown"
 third_to_last_obj = "unknown"
 storage = None
-ground_truth = "None"
+ground_truth = "unknown"
+sent_object = 'unknown'
 speech = []
 write_speech = []
 global state_dist
 state_dist = dict()
 global objects
 objects = []
+history =[]
 #containers = {"bowl1": "chocolate", "bowl2": "butter", "bowl3": "eggs", "bowl4": "sugar", "bowl5": "vanilla", "bowl6": "flour", "bowl7": "salt", "bowl8": "pepper", "bowl9": "milk", "bowl10": "banana"}
 #TEMP HACK
 #objects = [("pink_box", (1.4,-0.2,-0.5)), ("purple_cylinder", (1.4, 0.05, -0.5))]
@@ -72,14 +82,7 @@ eps = 0.0001
 #user = 1
 
 global pub
-from visualization_msgs.msg import Marker
-from geometry_msgs.msg import Point
 
-#David's Dependencies
-import operator
-import collections
-import random
-import copy
 
 #David's global variables
 ingredient_file = 'src/no_repeat_numbered.txt'
@@ -90,6 +93,7 @@ past_bigrams = {}
 past_trigrams = {}
 past_4grams = {}
 smoothing_coefficient = 0
+largest_t = '' #what the language model says is most likely
 
 #Recipe File Reader
 def file_reader():
@@ -109,7 +113,6 @@ def normalize(x): #for dictionary vectors
     total = sum(x.values(), 0.0)
     for key in x:
         x[key] /= total
-    return x
 
 def weight(x, weight):
     cpy = copy.deepcopy(x)
@@ -118,89 +121,46 @@ def weight(x, weight):
     return cpy
 
 #David's transition functions
-def unigram_counter(mod):
+def unigram_counter():
     global unigram_init
     global uni_counts
     if unigram_init == False:
         for line in range(0, len(recipe_list)):
-            next_ing = recipe_list[line].split(' # ')
-            if int(next_ing[0]) != mod:
-                uni_counts[next_ing[1].split(',')[0]] += 1.0
-        uni_counts = normalize(uni_counts)
+            next_ing = recipe_list[line].split(' # ')[1]
+            ing_clean = next_ing.split(',')[0]
+            if ing_clean in word_probabilities.keys():
+                uni_counts[ing_clean] += 1.0
+        normalize(uni_counts)
         unigram_init = True
-
+        #print uni_counts
     return uni_counts
 
-'''
-def bigram_counter(previous_ingredient, mod):
 
-    if previous_ingredient in past_bigrams:
-        return past_bigrams[previous_ingredient]
-    else:
-        b_lam = smoothing_coefficient #need to test for best number
-        ni = collections.Counter()
-        for line in range(0, len(recipe_list)):
-            if previous_ingredient in recipe_list[line]:
-                next_ing = recipe_list[line + 1].split(' # ')
-                if int(next_ing[0]) != mod:
-                    ni[next_ing[1].split(',')[0]] += 1.0
-        ni = normalize(ni)
-
-        if not list(ni.items()) or False:
-            past_bigrams[previous_ingredient] = weight(unigram_counter(mod), 1.0 - b_lam)
-        else:
-            past_bigrams[previous_ingredient] = weight(ni, b_lam) + weight(unigram_counter(mod), 1.0 - b_lam)
-    
-        return past_bigrams[previous_ingredient]
-'''
-
-def bigram_counter(prev_ing, mod):
+def bigram_counter(prev_ing):
     if prev_ing in past_bigrams:
         return past_bigrams[prev_ing]
     else:
-        b_lam = smoothing_coefficient #need to test for best number
-        #b_lam = 1.0 #need to test for best number
         ni = collections.Counter()
         for line in range(0, len(recipe_list)):
             if prev_ing in recipe_list[line - 1]:
-                next_ing = recipe_list[line].split(' # ')
-                if int(next_ing[0]) != mod:
-                    ni[next_ing[1].split(',')[0]] += 1.0
-        ni = normalize(ni)
-        if not list(ni.items()):
-            #print 'mod: %f' % mod
-            #print unigram_counter(mod)
-            past_bigrams[prev_ing] = weight(unigram_counter(mod), 1.0 - b_lam)
+                next_ing = recipe_list[line].split(' # ')[1]
+                ing_clean = next_ing.split(',')[0]
+                #print 'ing clean %s, word_probabilities.keys = %s' %(ing_clean, str(word_probabilities.keys()))
+                if ing_clean.replace(' ','_') in word_probabilities.keys():
+                    #print ing_clean + 'True!!!!!!!!!!!!!!!!!!!!!!!!!!'
+                    ni[ing_clean] += 1.0
+        normalize(ni)
+        #print  ni
+        if not list(ni):
+            #return unigram_counter()
+            past_bigrams[prev_ing] = unigram_counter()
         else:
-            past_bigrams[prev_ing] = weight(ni, b_lam) + weight(unigram_counter(mod), 1.0 - b_lam)
+            #print 'wooo!'
+            past_bigrams[prev_ing] = ni
         return past_bigrams[prev_ing]
 
-'''
-def trigram_counter(prev_ing, prev_ing2, mod):
-    input_ings = prev_ing + ":" + prev_ing2
-    if input_ings in past_trigrams:
-        return past_trigrams[input_ings]
-    else:
-        t_lam = smoothing_coefficient
-        ni = collections.Counter()
 
-        for line in range(0, len(recipe_list)):
-            if prev_ing in recipe_list[line] and prev_ing2 in recipe_list[line+1]:
-                next_ing = recipe_list[line+2].split(' # ')
-                if int(next_ing[0]) != mod:
-                    ni[next_ing[1].split(',')[0]] += 1.0
-
-        ni = normalize(ni)
-        if not list(ni.items()):
-            #return weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
-            past_trigrams[input_ings] = weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
-        else:
-            #return weight(ni, t_lam) + weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
-            past_trigrams[input_ings] = weight(ni, t_lam) + weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
-
-        return past_trigrams[input_ings]
-'''
-def trigram_counter(prev_ing, prev_ing2, mod):
+def trigram_counter(prev_ing, prev_ing2):
     
     input_ings = prev_ing + ":" + prev_ing2
     if input_ings in past_trigrams:
@@ -211,18 +171,21 @@ def trigram_counter(prev_ing, prev_ing2, mod):
 
         for line in range(0, len(recipe_list)):
             if prev_ing in recipe_list[line - 2] and prev_ing2 in recipe_list[line - 1]:
-                next_ing = recipe_list[line].split(' # ')
-                if int(next_ing[0]) != mod:
-                    ni[next_ing[1].split(',')[0]] += 1.0
+                next_ing = recipe_list[line].split(' # ')[1]
+                ing_clean = next_ing.split(',')[0]
+                if ing_clean.replace(' ','_') in word_probabilities.keys():
+                    ni[ing_clean] += 1.0
 
-        ni = normalize(ni)
-        if not list(ni.items()):
-            past_trigrams[input_ings] = weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
+        normalize(ni)
+        if not list(ni):
+            #return bigram_counter(prev_ing2)
+            past_trigrams[input_ings] = bigram_counter(prev_ing2)
         else:
-            past_trigrams[input_ings] = weight(ni, t_lam) + weight(bigram_counter(prev_ing2, mod), 1.0 - t_lam)
+            #return ni
+            past_trigrams[input_ings] = ni
         return past_trigrams[input_ings]
 
-def fourgram_counter(prev_ing, prev_ing2, prev_ing3, mod):
+def fourgram_counter(prev_ing, prev_ing2, prev_ing3):
 
     input_ings = prev_ing + ":" + prev_ing2 + ":" + prev_ing3
     if input_ings in past_4grams:
@@ -233,43 +196,26 @@ def fourgram_counter(prev_ing, prev_ing2, prev_ing3, mod):
 
         for line in range(0, len(recipe_list)):
             if prev_ing in recipe_list[line - 3] and prev_ing2 in recipe_list[line - 2] and prev_ing3 in recipe_list[line - 1]:
-                next_ing = recipe_list[line].split(' # ')
-                if int(next_ing[0]) != mod:
-                    ni[next_ing[1].split(',')[0]] += 1.0
+                    next_ing = recipe_list[line].split(' # ')[1]
+                    ing_clean = next_ing.split(',')[0]
+                    if ing_clean in word_probabilities.keys() and ing_clean not in last_obj and ing_clean not in scnd_to_lat_obj and ing_clean not in third_to_last_obj:
+                        ni[ing_clean] += 1.0
 
-        ni = normalize(ni)
-        if not list(ni.items()):
-            past_4grams[input_ings] = weight(trigram_counter(prev_ing2, prev_ing3, mod), 1.0 - f_lam)
+        normalize(ni)
+        if not list(ni):
+            #return trigram_counter(prev_ing2, prev_ing3)
+            past_4grams[input_ings] = trigram_counter(prev_ing2, prev_ing3)
         else:
-            past_4grams[input_ings] = weight(ni, f_lam) + weight(trigram_counter(prev_ing2, prev_ing3, mod), 1.0 - f_lam)
+            #return ni
+            past_4grams[input_ings] = ni
         return past_4grams[input_ings]
-
-#vector utilities
-def norm(vec):
-    total = 0.0
-    for i in range(len(vec)):
-        total += vec[i] * vec[i]
-    return math.sqrt(total)
-def sub_vec(v1,v2):
-    ret = []
-    for i in range(len(v1)):
-        ret += [v1[i]-v2[i]]
-    return tuple(ret)
-def add_vec(v1,v2):
-    ret = []
-    for i in range(len(v1)):
-        ret += [v1[i]+v2[i]]
-    return tuple(ret)
-def angle_between(origin, p1, p2):
-    v1 = sub_vec(p1, origin)
-    v2 = sub_vec(p2, origin)
-    return math.acos(dot(v1, v2)/(norm(v1)* norm(v2)))
 
 
 #callbacks
 def speech_callback(input):
     global speech
     speech = input.data.split()
+    #baxter_respond()
 def object_callback(input):
     pass
 def truth_callback(input):
@@ -277,96 +223,22 @@ def truth_callback(input):
     ground_truth = input.data
 
 
+def update_history():   
+    global last_obj
+    global scnd_to_lat_obj
+    global third_to_last_obj
+
+    if ground_truth != last_obj:
+        third_to_last_obj = scnd_to_lat_obj
+        scnd_to_lat_obj = last_obj
+        last_obj = ground_truth
+        reset_history()
 
 
-def is_arm_null_gesture(arm_origin, arm_point):
-    if (arm_origin == None or arm_point == None):
-        return True
-    else:
-        min_angle = 10.0 #greater than 3.14, so should always be greatest angle
-        for obj in objects:
-            if angle_between(arm_origin, arm_point, obj[1]) < min_angle:
-                min_angle = angle_between(arm_origin, arm_point, obj[1])
-        return min_angle > 3.14159/6 or min_angle > angle_between(arm_origin, arm_point, right_foot) or min_angle > angle_between(arm_origin, arm_point, left_foot)
-def is_head_null_gesture(origin, point):
-    return (origin == None or point == None)
 
 def prob_of_sample(sample):
     return scipy.stats.norm(0.0, math.sqrt(variance)).pdf(sample)
 
-
-#fills body points from openni data
-def fill_points(tfl):
-    try:
-        global user
-        frame = "/base" #"camera_link"
-        allFramesString = tfl.getFrameStrings()
-        onlyUsers = set([line for line in allFramesString if 'right_elbow_' in line])
-        n = len('right_elbow_')
-        userIDs = [el[n:] for el in onlyUsers]
-        user = ''
-        if len(userIDs) > 0:
-            mostRecentUID = userIDs[0]
-            mostRecentTime = tfl.getLatestCommonTime(frame, 'right_elbow_' + mostRecentUID).to_sec()
-            for uid in userIDs:
-                compTime = tfl.getLatestCommonTime(frame, 'right_elbow_' + uid).to_sec()
-                #rospy.loginfo("Diff time " + str(rospy.get_rostime().to_sec() - compTime))
-                if compTime >= mostRecentTime and rospy.get_rostime().to_sec() - compTime < 5:
-                    user = uid
-                    mostRecentTime = compTime
-        global left_arm_origin
-        global right_arm_origin
-        global head_origin
-        global head_point
-        global left_arm_point
-        global right_arm_point
-        global left_foot
-        global right_foot
-        (to_left_elbow,_) = tfl.lookupTransform(frame,"/left_elbow_" + user, rospy.Time(0))
-        (to_right_elbow,_) = tfl.lookupTransform(frame,"/right_elbow_" + user, rospy.Time(0))
-        (to_left_hand,_) = tfl.lookupTransform(frame,"/left_hand_" + user, rospy.Time(0))
-        (to_right_hand,_) = tfl.lookupTransform(frame,"/right_hand_" + user, rospy.Time(0))
-        (right_foot,_) = tfl.lookupTransform(frame, "/right_foot_" + user, rospy.Time(0))
-        (left_foot,_) = tfl.lookupTransform(frame, "/left_foot_" + user, rospy.Time(0))
-        (to_head,head_rot) = tfl.lookupTransform(frame,"/head_" + user, rospy.Time(0))
-        left_arm_origin = to_left_hand
-        left_arm_point = add_vec(to_left_hand, sub_vec(to_left_hand, to_left_elbow))
-        right_arm_origin = to_right_hand
-        right_arm_point = add_vec(to_right_hand, sub_vec(to_right_hand, to_right_elbow))
-        head_origin = to_head
-        head_temp = dot((0.0,0.0,-1.0,1.0), quaternion_matrix(quaternion_inverse(head_rot)))
-        head_point = (head_temp[0] + to_head[0], head_temp[1] + to_head[1], head_temp[2] + to_head[2])
-        
-        #visualization for testing (verify head vector)
-        # marker = Marker()
-        # marker.header.frame_id = "camera_link"
-        # marker.header.stamp = rospy.Time(0)
-        # marker.type = marker.POINTS
-        # marker.action = marker.ADD
-        # marker.scale.x = 0.2
-        # marker.scale.y = 0.2
-        # marker.scale.z = 0.2
-        # marker.color.a = 1.0
-        # p1 = Point(right_arm_origin[0],right_arm_origin[1],right_arm_origin[2])
-        # p2 = Point(right_arm_point[0],right_arm_point[1],right_arm_point[2])
-        # p3 = Point(left_arm_origin[0],left_arm_origin[1],left_arm_origin[2])
-        # p4 = Point(left_arm_point[0],left_arm_point[1],left_arm_point[2])
-        # p5 = Point(head_origin[0],head_origin[1],head_origin[2])
-        # p6 = Point(head_point[0],head_point[1],head_point[2])
-        # marker.points += [p1, p2, p3, p4, p5, p6]
-        # pub.publish(marker)
-
-        return True
-    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-        left_arm_point = None
-        right_arm_origin = None
-        left_arm_origin = None
-        right_arm_point = None
-        head_point = None
-        head_origin = None
-        left_foot = None
-        right_foot = None
-        return False
 
 def baxter_init_response():
     plt.ion()
@@ -379,7 +251,7 @@ def plot_respond():
     for word in state_dist.keys():
         x.append(word)
     plt.bar(range(len(state_dist.keys())), state_dist.values(), align='center')
-    plt.xticks(range(len(state_dist.keys())), x, size='small')
+    plt.xticks(range(len(state_dist.keys())), x, size='small', rotation='vertical')
     font = {'family' : 'normal','weight' : 'bold','size'   : 25}
     matplotlib.rc('font', **font)
     plt.ylim([0,1.0])
@@ -387,36 +259,29 @@ def plot_respond():
 
 def baxter_respond():
     global speech
-    global last_obj
-    global scnd_to_lat_obj
-    global third_to_last_obj
-
+    global history
+    global sent_object
 
     print 'obj 1: %s, obj 2: %s, obj 3: %s' % (last_obj, scnd_to_lat_obj, third_to_last_obj)
 
-    most_likely = max(state_dist.iteritems(), key=operator.itemgetter(1))
-    if most_likely[1] > 0.3 and last_obj != most_likely[0]:
-            third_to_last_obj = scnd_to_lat_obj
-            scnd_to_lat_obj = last_obj
-            last_obj = most_likely[0]
+    most_likely = sorted(state_dist.iteritems(), key=operator.itemgetter(1))
+    if speech:
             pub = rospy.Publisher('fetch_commands', String, queue_size=0)
             #rospy.init_node('pointer', anonymous=True)
             rate = rospy.Rate(10)
-            pub.publish(most_likely[0])
-            print "SENT OBJECT:" + most_likely[0]
+            best_ing = -1
+            pub.publish(most_likely[best_ing][0])
+            print "SENT OBJECT:" + most_likely[best_ing][0]
             #for obj in objects:
             #    #print obj[0], most_likely[0]
             #    if obj[0] == most_likely[0]:
             #        objects.remove(obj)
             #del state_dist[most_likely[0]]
             rate.sleep()
+            history.append(ground_truth)
     speech = []
 
-    #if last_obj == 'salt':
-    #    third_to_last_obj = 'unknown'
-    #    scnd_to_lat_obj = 'unknown'
-    #    last_obj = 'unknown'
-    #    pass
+
 
 
 
@@ -425,6 +290,8 @@ def update_model():
     global state_dist
     global speech
     global num_objs
+    global largest_t
+    global speech
     #if num_objs != len(objects):
     #    for obj in objects:
     #        state_dist[obj[0]] = 1.0/len(state_dist)
@@ -442,28 +309,32 @@ def update_model():
         state_dist[obj_id] = 0.0
         # transition update
         for prev_id in prev_dist.keys():
-            if is_arm_null_gesture(right_arm_origin, right_arm_point) and \
-             is_arm_null_gesture(left_arm_origin, left_arm_point) \
-            and len(speech)==0 and False:
+            if len(speech)==0 and False:
                 t = 0.005
             else:
                 #t= 0.005
-                #t = max(0.0001, unigram_counter(-1)[obj_id.replace('_',' ')])
-                #t = unigram_counter(-1)[obj_id.replace('_',' ')]
-                #t = max(0.001, bigram_counter(last_obj, -1)[obj_id.replace('_',' ')])
-                #print t
-                # = max(0.0001, trigram_counter(scnd_to_lat_obj, last_obj, -1)[obj_id.replace('_', ' ')])
-                t = max(0.0001, fourgram_counter(last_obj, scnd_to_lat_obj, third_to_last_obj, -1)[obj_id.replace('_',' ')])
+                #t = max(0.0001, unigram_counter()[obj_id.replace('_',' ')])
+                #t = unigram_counter()[obj_id.replace('_',' ')]
+                #cur_dist = bigram_counter(last_obj)
+                #print cur_dist
+                t = max(0.0001, bigram_counter(ground_truth)[obj_id.replace('_',' ')])
+                #old_t = largest_t
+                #largest_t = cur_dist.most_common()[0][0]
+                #if old_t != largest_t:
+                #    old_t = largest_t
+                #    print largest_t
+                #t = max(0.0001, trigram_counter(scnd_to_lat_obj, last_obj)[obj_id.replace('_', ' ')])
+                #t = max(0.0001, fourgram_counter(last_obj, scnd_to_lat_obj, third_to_last_obj)[obj_id.replace('_',' ')])
                 #if 'brown sugar' in speech:
                 #    print 'brown sugar %f' % t
                 #if 'white sugar' in speech:
                 #    print 'white sugar %f' % t
-                if 'carduni' in obj_id:
-                    print '%s %f' % (obj_id, t)
+                #if 'artichokes' in obj_id:
+                   # print 't for %s is bigram(%s) = %f' % (obj_id, last_obj, t)
                 #t *= 10
             #print 'last_obj %s, obj_id %s, t %f' % (last_obj, obj_id, t)    
-            #t = bigram_counter(last_obj, -1)[obj_id.replace('_', ' ')]
-            #t = trigram_counter(last_obj, scnd_to_lat_obj, -1)[obj_id.replace('_', ' ')]
+            #t = bigram_counter(last_obj)[obj_id.replace('_', ' ')]
+            #t = trigram_counter(last_obj, scnd_to_lat_obj)[obj_id.replace('_', ' ')]
             #t *= 10
             #t = 0.05
             #print "previous object: %s, estimation of object %s: %f" % (last_obj, containers[obj_id], t)
@@ -471,31 +342,31 @@ def update_model():
                 state_dist[obj_id] += (1-t)*prev_dist[prev_id]
             else:
                 state_dist[obj_id] += t*prev_dist[prev_id]
-        # left arm
-        if not is_arm_null_gesture(left_arm_origin, left_arm_point):
-            l_arm_angle = angle_between(left_arm_origin, left_arm_point, obj[1])
-            #if l_arm_angle > 3.14/4:
-            #    l_arm_angle = 3.14/2
-            state_dist[obj_id] *= prob_of_sample(l_arm_angle)
-        #right arm
-        if not is_arm_null_gesture(right_arm_origin, right_arm_point):
-            r_arm_angle = angle_between(right_arm_origin, right_arm_point, obj[1])
-            #if r_arm_angle > 3.14/4:
-            #    r_arm_angle = 3.14/2
-            state_dist[obj_id] *= prob_of_sample(r_arm_angle)
-        #head
-        if False and not is_head_null_gesture(head_origin, head_point):
-            state_dist[obj_id] *= prob_of_sample(angle_between(head_origin, head_point, obj[1]))
+    
         #speech
         for word in speech:
             if word in vocabulary:
-                state_dist[obj_id] *= word_probabilities[obj_id].get(word, eps)
+                state_dist[obj_id] *= word_probabilities[obj_id].get(word, eps) 
     #normalize
     total = sum(state_dist.values())
     for obj in state_dist.keys():
         state_dist[obj] = state_dist[obj] / total
     global write_speech
     write_speech = speech
+
+    
+
+def reset_history():
+    if ground_truth == 'sesame_seeds':
+        global last_obj
+        global scnd_to_lat_obj
+        global third_to_last_obj
+        global history
+
+        last_obj = 'unknown'
+        scnd_to_lat_obj = 'unknown'
+        third_to_last_obj  = 'unknown'
+        history = []
 
 def load_dict(filename):
     global word_probabilities
@@ -507,9 +378,10 @@ def load_dict(filename):
         lines = f.read().split('\n')
         for line in lines:
             words = line.split()
-            print words
+            #print words
             objects.append((words[0], (1.2, -0.37, -0.37)))
-            word_probabilities[words[0]] = dict()
+            if words[0] not in word_probabilities:
+                word_probabilities[words[0]] = dict()
             for i in range(1, len(words)):
                 word_probabilities[words[0]][words[i]] = word_probabilities[words[0]].get(words[i], 0.0) + 1.0
                 vocabulary.add(words[i])
@@ -518,33 +390,21 @@ def load_dict(filename):
         for x in word_probabilities[word]:
             word_probabilities[word][x] = word_probabilities[word][x]/ total
 
+    #print word_probabilities
 
-
-def write_output():
-    global write_speech
-    if storage:
-        output = [head_origin, head_point, left_arm_origin, left_arm_point, \
-                    right_arm_origin, right_arm_point, left_foot, right_foot,\
-                    ground_truth, write_speech, objects, max(state_dist.keys(), key=lambda x: state_dist[x]), time.clock()]
-        storage.write(str(output) + "\n")
-    write_speech = []
-    #objects
-    #arms
-    #head
-    #speech
-    #ground truth
 
 
 def main():
     global speech
     global tfl
-    file_reader()
+    file_reader() 
     rospy.init_node('h2r_gesture')
     load_dict(sys.argv[1])
     tfl = tf.TransformListener()
     rospy.Subscriber('speech_recognition', String, speech_callback, queue_size=1)
     rospy.Subscriber('publish_detections_center/blue_labeled_objects', RecognizedObjectArray, object_callback, queue_size=1)
     rospy.Subscriber('current_object', String, truth_callback, queue_size=1)
+    rospy.Subscriber('ground_truth', String, truth_callback, queue_size=1)
     rate = rospy.Rate(30.0)
     global storage
     if len(sys.argv) > 2:
@@ -571,14 +431,17 @@ def main():
     baxter_init_response()
     while not rospy.is_shutdown():
         pub.publish(marker)
-        fill_points(tfl)
         update_model()
         if not len(state_dist.keys()) == 0:
             for obj in objects:
-                marker.points.append(Point(obj[1][0], obj[1][1], obj[1][2]))
+                #marker.points.append(Point(obj[1][0], obj[1][1], obj[1][2]))
+                pass
             baxter_respond()
             plot_respond()
-            write_output()
+            update_history()
+        for i in range(0, 10):
+            #update_model()
+            pass
         rate.sleep()
 
 
