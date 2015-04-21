@@ -18,6 +18,8 @@ from tf.transformations import quaternion_inverse, quaternion_matrix
 
 from object_recognition_msgs.msg import RecognizedObjectArray
 
+from gesture_rec.msg import BayesFilterStateDist
+
 global left_arm_origin
 global right_arm_origin
 global head_origin
@@ -64,6 +66,10 @@ eps = 0.0001
 global pub
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Point
+
+
+# publisher for bayes filter state
+global state_pub
 
 #David's Dependencies
 import operator
@@ -452,6 +458,10 @@ def write_output():
     #ground truth
 
 
+def publish_state(): 
+    state_pub.publish(BayesFilterStateDist(state_dist.keys(), state_dist.values()))
+
+
 def main():
     global speech
     global tfl
@@ -485,6 +495,15 @@ def main():
     #p3 = Point(1.5, -0.37, -0.3) #plastic spoon
     #p4 = Point(1.5, 0.07, -0.3) #silver spoon
     #marker.points += [p1,p2,p3,p4]
+
+
+	# initialize the state publisher
+    global state_pub
+    state_pub = rospy.Publisher("mm_bf_state", BayesFilterStateDist)
+
+
+
+
     baxter_init_response()
     while not rospy.is_shutdown():
         pub.publish(marker)
@@ -496,6 +515,7 @@ def main():
             baxter_respond()
             plot_respond()
             write_output()
+            publish_state()
         rate.sleep()
 
 
